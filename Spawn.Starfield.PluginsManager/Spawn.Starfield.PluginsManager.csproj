@@ -6,8 +6,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <AssemblyVersion>2023.11.1.212</AssemblyVersion>
-    <FileVersion>2023.11.1.212</FileVersion>
+    <AssemblyVersion>2023.11.1.216</AssemblyVersion>
+    <FileVersion>2023.11.1.216</FileVersion>
     <ApplicationIcon>Resources\pluginstxticon.ico</ApplicationIcon>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <AssemblyName>SF Plugin Manager</AssemblyName>
