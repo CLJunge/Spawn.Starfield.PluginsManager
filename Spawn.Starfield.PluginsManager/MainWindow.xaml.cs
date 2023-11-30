@@ -18,13 +18,17 @@ namespace Spawn.Starfield.PluginsManager
             else return a.LoadIndex == -1 ? 1 : -1;
         });
 
+        private const string RESOURCE_TAG = "sResourceIndexFileList=";
+
         private string m_strPluginsFilePath;
+        private string m_strStarfieldCustomIniFilePath;
 
         public MainWindow()
         {
             InitializeComponent();
 
             m_strPluginsFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Starfield", "plugins.txt");
+            m_strStarfieldCustomIniFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", "Starfield", "StarfieldCustom.ini");
 
             UpdateTitle();
         }
@@ -226,7 +230,7 @@ namespace Spawn.Starfield.PluginsManager
         private void LoadArchives()
         {
             List<Item> lstDataArchives = LoadArchivesFromDataDirectory();
-            List<Item> lstLoadedArchives = LoadArchivesFromFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", "Starfield", "StarfieldCustom.ini"));
+            List<Item> lstLoadedArchives = LoadArchivesFromFile(m_strStarfieldCustomIniFilePath);
 
             ArchiveList.ItemsSource = CompareAndSortArchives(lstDataArchives, lstLoadedArchives);
 
@@ -348,41 +352,89 @@ namespace Spawn.Starfield.PluginsManager
             IncreaseLoadIndex(ArchiveList, ArchivesUpButton, ArchivesDownButton);
         }
 
-        private void ArchivesSave_Click(object sender, RoutedEventArgs e)
+        private string AssembleResourceString()
         {
+            StringBuilder sb = new();
+
+            sb.Append(RESOURCE_TAG);
+            sb.Append("Starfield - LODTextures.ba2, ");
+            sb.Append("Starfield - Textures01.ba2, ");
+            sb.Append("Starfield - Textures02.ba2, ");
+            sb.Append("Starfield - Textures03.ba2, ");
+            sb.Append("Starfield - Textures04.ba2, ");
+            sb.Append("Starfield - Textures05.ba2, ");
+            sb.Append("Starfield - Textures06.ba2, ");
+            sb.Append("Starfield - Textures07.ba2, ");
+            sb.Append("Starfield - Textures08.ba2, ");
+            sb.Append("Starfield - Textures09.ba2, ");
+            sb.Append("Starfield - Textures10.ba2, ");
+            sb.Append("Starfield - Textures11.ba2, ");
+            sb.Append("Starfield - TexturesPatch.ba2");
+
             try
             {
-                StringBuilder sb = new();
-                sb.Append("sResourceIndexFileList=");
-                sb.Append("Starfield - LODTextures.ba2, ");
-                sb.Append("Starfield - Textures01.ba2, ");
-                sb.Append("Starfield - Textures02.ba2, ");
-                sb.Append("Starfield - Textures03.ba2, ");
-                sb.Append("Starfield - Textures04.ba2, ");
-                sb.Append("Starfield - Textures05.ba2, ");
-                sb.Append("Starfield - Textures06.ba2, ");
-                sb.Append("Starfield - Textures07.ba2, ");
-                sb.Append("Starfield - Textures08.ba2, ");
-                sb.Append("Starfield - Textures09.ba2, ");
-                sb.Append("Starfield - Textures10.ba2, ");
-                sb.Append("Starfield - Textures11.ba2, ");
-                sb.Append("Starfield - TexturesPatch.ba2");
-
                 List<Item> lstArchives = ArchiveList.Items.Cast<Item>().Where(i => i.IsActive).ToList();
+
+                StringBuilder sbCustomArchives = new();
 
                 for (int i = 0; i < lstArchives.Count; i++)
                 {
-                    sb.Append($", {lstArchives[i].Name}");
+                    sbCustomArchives.Append($", {lstArchives[i].Name}");
                 }
 
-                Clipboard.SetText(sb.ToString());
-
-                MessageBox.Show("Copied resource string to clipboard. Paste it into your StarfieldCustom.ini file.", Title, MessageBoxButton.OK, MessageBoxImage.Information);
+                sb.Append(sbCustomArchives);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Couldn't create resource string!\r\n\r\n{ex.Message}", Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
+
+            return sb.ToString();
+        }
+
+        private void CopyToClipboard(string value)
+        {
+            try
+            {
+                Clipboard.SetText(value);
+
+                MessageBox.Show("Copied resource string to clipboard. Paste it into your StarfieldCustom.ini file.", Title, MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Couldn't copy resource string to clipboard!\r\n\r\n{ex.Message}", Title, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void WriteToCustomIniFile(string filePath, string resourceString)
+        {
+            string? strContent = TextFileManager.ReadStringFromFile(filePath);
+
+            if (!string.IsNullOrEmpty(strContent))
+            {
+                string[] vCurrentContent = strContent.Split("\r\n");
+
+                int nIndex = Array.FindIndex(vCurrentContent, s => s.StartsWith(RESOURCE_TAG));
+                vCurrentContent[nIndex] = resourceString;
+
+                TextFileManager.WriteStringToFile(string.Join("\r\n", vCurrentContent), filePath);
+
+                MessageBox.Show("Replaced resource string in the StarfieldCustom.ini file.", Title, MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void ArchivesSave_Click(object sender, RoutedEventArgs e)
+        {
+            string strResourceString = AssembleResourceString();
+
+            WriteToCustomIniFile(m_strStarfieldCustomIniFilePath, strResourceString);
+        }
+
+        private void ArchivesCopy_Click(object sender, RoutedEventArgs e)
+        {
+            string strResourceString = AssembleResourceString();
+
+            CopyToClipboard(strResourceString);
         }
 
         private void ArchivesCancel_Click(object sender, RoutedEventArgs e)

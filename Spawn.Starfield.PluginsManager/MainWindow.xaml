@@ -191,8 +191,9 @@
                         </Button>
                     </StackPanel>
 
-                    <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal" Margin="15,0,15,15" HorizontalAlignment="Right">
-                        <Button Content="C_opy to Clipboard" Margin="0,0,10,0" Click="ArchivesSave_Click" />
+                    <StackPanel Grid.ColumnSpan="2" Grid.Row="3" Orientation="Horizontal" Margin="15,0,15,15" HorizontalAlignment="Right">
+                        <Button Content="C_opy to Clipboard" Margin="0,0,10,0" Click="ArchivesCopy_Click" />
+                        <Button Content="_Save" Margin="0,0,10,0" Click="ArchivesSave_Click" />
                         <Button Content="_Reload" Click="ArchivesCancel_Click" />
                     </StackPanel>
                 </Grid>
