@@ -31,17 +31,20 @@ namespace Spawn.Starfield.PluginsManager
 
         private void UpdateTitle()
         {
-            FileInfo fi = new(Path.Combine(AppSettings.Default.DataDirectory, "..", "Starfield.exe"));
-
-            if (fi.Exists)
+            if (!string.IsNullOrEmpty(App.DataDir))
             {
-                try
+                FileInfo fi = new(Path.Combine(App.DataDir, "..", "Starfield.exe"));
+
+                if (fi.Exists)
                 {
-                    FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(fi.FullName);
-                    Title += $" (Starfield {new Version(versionInfo.FileVersion!).ToString(3)})";
-                }
-                catch
-                {
+                    try
+                    {
+                        FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(fi.FullName);
+                        Title += $" (Starfield {new Version(versionInfo.FileVersion!).ToString(3)})";
+                    }
+                    catch
+                    {
+                    }
                 }
             }
         }
@@ -64,7 +67,7 @@ namespace Spawn.Starfield.PluginsManager
 
             PluginList.ItemsSource = CompareAndSortPlugins(lstDataPlugins, lstLoadedPlugins);
 
-            WritePluginsToFile(m_strPluginsFilePath, false);
+            //WritePluginsToFile(m_strPluginsFilePath, false);
 
             PluginsUpButton.IsEnabled = false;
             PluginsDownButton.IsEnabled = false;
@@ -95,7 +98,7 @@ namespace Spawn.Starfield.PluginsManager
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Couldn't compare plugins!\r\n\r\n{ex.Message}");
+                MessageBox.Show($"Couldn't compare plugins!\r\n\r\n{ex.Message}", Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             return lstPlugins;
@@ -128,7 +131,7 @@ namespace Spawn.Starfield.PluginsManager
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Couldn't save plugins.txt file!\r\n\r\n{ex.Message}");
+                MessageBox.Show($"Couldn't save plugins.txt file!\r\n\r\n{ex.Message}", Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -169,7 +172,7 @@ namespace Spawn.Starfield.PluginsManager
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Couldn't load plugins!\r\n\r\n{ex.Message}");
+                MessageBox.Show($"Couldn't load plugins!\r\n\r\n{ex.Message}", Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             return lstRet;
@@ -179,9 +182,9 @@ namespace Spawn.Starfield.PluginsManager
         {
             List<Item> lstRet = [];
 
-            if (!string.IsNullOrEmpty(AppSettings.Default.DataDirectory))
+            if (!string.IsNullOrEmpty(App.DataDir))
             {
-                string[] vFiles = Directory.GetFiles(AppSettings.Default.DataDirectory, "*.esm").Select(f => Path.GetFileName(f)).ToArray();
+                string[] vFiles = Directory.GetFiles(App.DataDir, "*.esm").Select(f => Path.GetFileName(f)).ToArray();
                 string[] vFilteredFiles = vFiles.Where(f => !AppSettings.Default.DefaultPlugins.Contains(f)).ToArray();
 
                 for (int i = 0; i < vFilteredFiles.Length; i++)
@@ -235,9 +238,9 @@ namespace Spawn.Starfield.PluginsManager
         {
             List<Item> lstRet = [];
 
-            if (!string.IsNullOrEmpty(AppSettings.Default.DataDirectory))
+            if (!string.IsNullOrEmpty(App.DataDir))
             {
-                string[] vFiles = Directory.GetFiles(AppSettings.Default.DataDirectory, "*.ba2").Select(f => Path.GetFileName(f)).ToArray();
+                string[] vFiles = Directory.GetFiles(App.DataDir, "*.ba2").Select(f => Path.GetFileName(f)).ToArray();
                 string[] vFilteredFiles = vFiles.Where(f => !AppSettings.Default.DefaultArchives.Contains(f)).ToArray();
 
                 for (int i = 0; i < vFilteredFiles.Length; i++)
@@ -293,7 +296,7 @@ namespace Spawn.Starfield.PluginsManager
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Couldn't load archives from ini file!\r\n\r\n{ex.Message}");
+                MessageBox.Show($"Couldn't load archives from ini file!\r\n\r\n{ex.Message}", Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             return lstRet;
@@ -324,7 +327,7 @@ namespace Spawn.Starfield.PluginsManager
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Couldn't compare archives!\r\n\r\n{ex.Message}");
+                MessageBox.Show($"Couldn't compare archives!\r\n\r\n{ex.Message}", Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             return lstArchives;
@@ -378,7 +381,7 @@ namespace Spawn.Starfield.PluginsManager
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Couldn't create resource string!\r\n\r\n{ex.Message}");
+                MessageBox.Show($"Couldn't create resource string!\r\n\r\n{ex.Message}", Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -455,6 +458,16 @@ namespace Spawn.Starfield.PluginsManager
                 UIElement? parent = ((Control)sender).Parent as UIElement;
                 parent?.RaiseEvent(eventArg);
             }
+        }
+
+        private void SetDataDirectory_Click(object sender, RoutedEventArgs e)
+        {
+            App.SelectDataDirectory();
+
+            MessageBox.Show("Updated Starfield data directory.", Title, MessageBoxButton.OK, MessageBoxImage.Information);
+
+            LoadPlugins();
+            LoadArchives();
         }
     }
 }

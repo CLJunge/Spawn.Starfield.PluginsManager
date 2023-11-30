@@ -10,65 +10,73 @@
         Background="{DynamicResource MaterialDesignPaper}"
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
-        Title="Spawn | Plugins Manager" ResizeMode="NoResize" SizeToContent="WidthAndHeight"
-        Loaded="Window_Loaded" MaxHeight="900" MaxWidth="1000">
-    <TabControl>
-        <TabItem Header="ESM Plugins">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+        Title="Spawn | Plugins Manager"
+        Loaded="Window_Loaded" Width="550" Height="700" MinWidth="550" MinHeight="700">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0">
+            <MenuItem Header="Set Data directory..." Click="SetDataDirectory_Click" />
+        </Menu>
+        <TabControl Grid.Row="1">
+            <TabItem Header="ESM Plugins">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
 
-                <ScrollViewer Grid.ColumnSpan="2" Grid.Row="0" Margin="20,20,20,20" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                    <ListView x:Name="PluginList" Grid.IsSharedSizeScope="True" Margin="0,-32,0,0" SelectionChanged="PluginList_SelectionChanged" Background="Transparent" SelectionMode="Single" PreviewMouseWheel="ListView_PreviewMouseWheel">
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignGridViewItem}">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                <Setter Property="VerticalContentAlignment" Value="Stretch" />
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.View>
-                            <GridView AllowsColumnReorder="False">
-                                <GridView.ColumnHeaderContainerStyle>
-                                    <Style TargetType="{x:Type GridViewColumnHeader}" BasedOn="{StaticResource MaterialDesignPaperButton}">
-                                        <Setter Property="IsEnabled" Value="False"/>
-                                        <Setter Property="Background" Value="Transparent" />
-                                        <Setter Property="BorderBrush" Value="{x:Null}" />
-                                        <Setter Property="BorderThickness" Value="0" />
-                                    </Style>
-                                </GridView.ColumnHeaderContainerStyle>
-                                <GridView.Columns>
-                                    <GridViewColumn>
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding LoadIndex}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-                                    <GridViewColumn>
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <CheckBox IsChecked="{Binding IsActive, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-                                    <GridViewColumn>
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Name}" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-                                </GridView.Columns>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                    <!--<ItemsControl Name="PluginList" Grid.IsSharedSizeScope="True" AllowDrop="True" PreviewMouseLeftButtonDown="PluginList_PreviewMouseLeftButtonDown" PreviewMouseMove="PluginList_PreviewMouseMove" Drop="PluginList_Drop">
+                    <ScrollViewer Grid.ColumnSpan="2" Grid.Row="0" Margin="20,20,20,20" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <ListView x:Name="PluginList" Grid.IsSharedSizeScope="True" Margin="0,-32,0,0" SelectionChanged="PluginList_SelectionChanged" Background="Transparent" SelectionMode="Single" PreviewMouseWheel="ListView_PreviewMouseWheel">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignGridViewItem}">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.View>
+                                <GridView AllowsColumnReorder="False">
+                                    <GridView.ColumnHeaderContainerStyle>
+                                        <Style TargetType="{x:Type GridViewColumnHeader}" BasedOn="{StaticResource MaterialDesignPaperButton}">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Setter Property="Background" Value="Transparent" />
+                                            <Setter Property="BorderBrush" Value="{x:Null}" />
+                                            <Setter Property="BorderThickness" Value="0" />
+                                        </Style>
+                                    </GridView.ColumnHeaderContainerStyle>
+                                    <GridView.Columns>
+                                        <GridViewColumn>
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding LoadIndex}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn>
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding IsActive, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn>
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Name}" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView.Columns>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        <!--<ItemsControl Name="PluginList" Grid.IsSharedSizeScope="True" AllowDrop="True" PreviewMouseLeftButtonDown="PluginList_PreviewMouseLeftButtonDown" PreviewMouseMove="PluginList_PreviewMouseMove" Drop="PluginList_Drop">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid Margin="0,0,10,10" Name="PluginGrid">
@@ -84,79 +92,79 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>-->
-                </ScrollViewer>
+                    </ScrollViewer>
 
-                <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" Margin="15,0,15,15" HorizontalAlignment="Left">
-                    <Button x:Name="PluginsUpButton" Margin="0,0,10,0" Click="PluginsUpButton_Click">
-                        <Path Fill="{DynamicResource MaterialDesignDarkBackground}" Data="M 0 6 L 12 6 L 6 0 Z"/>
-                    </Button>
-                    <Button x:Name="PluginsDownButton" Click="PluginsDownButton_Click">
-                        <Path Fill="{DynamicResource MaterialDesignDarkBackground}" Data="M 0 0 L 6 6 L 12 0 Z"/>
-                    </Button>
-                </StackPanel>
+                    <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" Margin="15,0,15,15" HorizontalAlignment="Left">
+                        <Button x:Name="PluginsUpButton" Margin="0,0,10,0" Click="PluginsUpButton_Click">
+                            <Path Fill="{DynamicResource MaterialDesignDarkBackground}" Data="M 0 6 L 12 6 L 6 0 Z"/>
+                        </Button>
+                        <Button x:Name="PluginsDownButton" Click="PluginsDownButton_Click">
+                            <Path Fill="{DynamicResource MaterialDesignDarkBackground}" Data="M 0 0 L 6 6 L 12 0 Z"/>
+                        </Button>
+                    </StackPanel>
 
-                <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal" Margin="15,0,15,15" HorizontalAlignment="Right">
-                    <Button Content="_Save" Margin="0,0,10,0" Click="PluginsSave_Click" />
-                    <Button Content="_Reload" Click="PluginsCancel_Click" />
-                </StackPanel>
-            </Grid>
-        </TabItem>
-        <TabItem Header="BA2 Archives">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal" Margin="15,0,15,15" HorizontalAlignment="Right">
+                        <Button Content="_Save" Margin="0,0,10,0" Click="PluginsSave_Click" />
+                        <Button Content="_Reload" Click="PluginsCancel_Click" />
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="BA2 Archives">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
 
-                <ScrollViewer Grid.ColumnSpan="2" Grid.Row="0" Margin="20,20,20,20" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                    <ListView x:Name="ArchiveList" Grid.IsSharedSizeScope="True" Margin="0,-32,0,0" SelectionChanged="ArchiveList_SelectionChanged" Background="Transparent" SelectionMode="Single" PreviewMouseWheel="ListView_PreviewMouseWheel">
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignGridViewItem}">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                <Setter Property="VerticalContentAlignment" Value="Stretch" />
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.View>
-                            <GridView AllowsColumnReorder="False">
-                                <GridView.ColumnHeaderContainerStyle>
-                                    <Style TargetType="{x:Type GridViewColumnHeader}" BasedOn="{StaticResource MaterialDesignPaperButton}">
-                                        <Setter Property="IsEnabled" Value="False"/>
-                                        <Setter Property="Background" Value="Transparent" />
-                                        <Setter Property="BorderBrush" Value="{x:Null}" />
-                                        <Setter Property="BorderThickness" Value="0" />
-                                    </Style>
-                                </GridView.ColumnHeaderContainerStyle>
-                                <GridView.Columns>
-                                    <GridViewColumn>
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding LoadIndex}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-                                    <GridViewColumn>
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <CheckBox IsChecked="{Binding IsActive, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-                                    <GridViewColumn>
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Name}" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-                                </GridView.Columns>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                    <!--<ItemsControl Name="PluginList" Grid.IsSharedSizeScope="True" AllowDrop="True" PreviewMouseLeftButtonDown="PluginList_PreviewMouseLeftButtonDown" PreviewMouseMove="PluginList_PreviewMouseMove" Drop="PluginList_Drop">
+                    <ScrollViewer Grid.ColumnSpan="2" Grid.Row="0" Margin="20,20,20,20" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <ListView x:Name="ArchiveList" Grid.IsSharedSizeScope="True" Margin="0,-32,0,0" SelectionChanged="ArchiveList_SelectionChanged" Background="Transparent" SelectionMode="Single" PreviewMouseWheel="ListView_PreviewMouseWheel">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignGridViewItem}">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.View>
+                                <GridView AllowsColumnReorder="False">
+                                    <GridView.ColumnHeaderContainerStyle>
+                                        <Style TargetType="{x:Type GridViewColumnHeader}" BasedOn="{StaticResource MaterialDesignPaperButton}">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Setter Property="Background" Value="Transparent" />
+                                            <Setter Property="BorderBrush" Value="{x:Null}" />
+                                            <Setter Property="BorderThickness" Value="0" />
+                                        </Style>
+                                    </GridView.ColumnHeaderContainerStyle>
+                                    <GridView.Columns>
+                                        <GridViewColumn>
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding LoadIndex}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn>
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding IsActive, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn>
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Name}" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView.Columns>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        <!--<ItemsControl Name="PluginList" Grid.IsSharedSizeScope="True" AllowDrop="True" PreviewMouseLeftButtonDown="PluginList_PreviewMouseLeftButtonDown" PreviewMouseMove="PluginList_PreviewMouseMove" Drop="PluginList_Drop">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid Margin="0,0,10,10" Name="PluginGrid">
@@ -172,22 +180,23 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>-->
-                </ScrollViewer>
+                    </ScrollViewer>
 
-                <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" Margin="15,0,15,15" HorizontalAlignment="Left">
-                    <Button x:Name="ArchivesUpButton" Margin="0,0,10,0" Click="ArchivesUpButton_Click">
-                        <Path Fill="{DynamicResource MaterialDesignDarkBackground}" Data="M 0 6 L 12 6 L 6 0 Z"/>
-                    </Button>
-                    <Button x:Name="ArchivesDownButton" Click="ArchivesDownButton_Click">
-                        <Path Fill="{DynamicResource MaterialDesignDarkBackground}" Data="M 0 0 L 6 6 L 12 0 Z"/>
-                    </Button>
-                </StackPanel>
+                    <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" Margin="15,0,15,15" HorizontalAlignment="Left">
+                        <Button x:Name="ArchivesUpButton" Margin="0,0,10,0" Click="ArchivesUpButton_Click">
+                            <Path Fill="{DynamicResource MaterialDesignDarkBackground}" Data="M 0 6 L 12 6 L 6 0 Z"/>
+                        </Button>
+                        <Button x:Name="ArchivesDownButton" Click="ArchivesDownButton_Click">
+                            <Path Fill="{DynamicResource MaterialDesignDarkBackground}" Data="M 0 0 L 6 6 L 12 0 Z"/>
+                        </Button>
+                    </StackPanel>
 
-                <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal" Margin="15,0,15,15" HorizontalAlignment="Right">
-                    <Button Content="C_opy to Clipboard" Margin="0,0,10,0" Click="ArchivesSave_Click" />
-                    <Button Content="_Cancel" Click="ArchivesCancel_Click" />
-                </StackPanel>
-            </Grid>
-        </TabItem>
-    </TabControl>
+                    <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal" Margin="15,0,15,15" HorizontalAlignment="Right">
+                        <Button Content="C_opy to Clipboard" Margin="0,0,10,0" Click="ArchivesSave_Click" />
+                        <Button Content="_Cancel" Click="ArchivesCancel_Click" />
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
 </Window>

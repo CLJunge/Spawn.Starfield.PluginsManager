@@ -1,13 +1,14 @@
 ﻿using Microsoft.Win32;
+using System.IO;
 using System.Windows;
 
 namespace Spawn.Starfield.PluginsManager
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
+        private const string DATA_DIR_FILE = "data_dir.txt";
+        public static string? DataDir { get; set; }
+
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
@@ -15,15 +16,33 @@ namespace Spawn.Starfield.PluginsManager
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
 #if DEBUG
-            AppSettings.Default.DataDirectory = "D:\\SteamLibrary\\steamapps\\common\\Starfield\\Data";
-            AppSettings.Default.Save();
+            //TextFileManager.WriteStringToFile("D:\\SteamLibrary\\steamapps\\common\\Starfield\\Data", DATA_DIR_FILE);
 #endif
 
-            if (string.IsNullOrEmpty(AppSettings.Default.DataDirectory))
+            DataDir = TextFileManager.ReadStringFromFile(DATA_DIR_FILE);
+
+            if (string.IsNullOrEmpty(DataDir))
             {
                 MessageBox.Show("The Starfield Data directory has not been set!", "Spawn | Plugins Manager", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                AppSettings.Default.DataDirectory = SelectDataDirectory();
-                AppSettings.Default.Save();
+
+                SelectDataDirectory();
+            }
+        }
+
+        public static void SelectDataDirectory()
+        {
+            string strDataDir = ShowFileDialog();
+
+            if (!Directory.Exists(strDataDir))
+            {
+                MessageBox.Show("The selected directory does not exist!", "Invalid data directory!", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                SelectDataDirectory();
+            }
+            else
+            {
+                DataDir = strDataDir;
+                TextFileManager.WriteStringToFile(strDataDir, DATA_DIR_FILE);
             }
         }
 
@@ -34,7 +53,7 @@ namespace Spawn.Starfield.PluginsManager
             Environment.Exit(-1);
         }
 
-        private static string SelectDataDirectory()
+        public static string ShowFileDialog()
         {
             string strRet = string.Empty;
 
@@ -46,22 +65,9 @@ namespace Spawn.Starfield.PluginsManager
 
             bool? blnResult = ofd.ShowDialog();
 
-            if (blnResult.HasValue && blnResult.Value)
+            if (blnResult.HasValue && blnResult.Value && !string.IsNullOrWhiteSpace(ofd.FolderName))
             {
                 strRet = ofd.FolderName;
-            }
-            else
-            {
-                MessageBoxResult result = MessageBox.Show("Please select the Data directory to continue!", "Spawn | Plugins Manager", MessageBoxButton.OKCancel, MessageBoxImage.Hand);
-
-                if (result == MessageBoxResult.OK)
-                {
-                    strRet = SelectDataDirectory();
-                }
-                else
-                {
-                    Environment.Exit(0);
-                }
             }
 
             return strRet;
