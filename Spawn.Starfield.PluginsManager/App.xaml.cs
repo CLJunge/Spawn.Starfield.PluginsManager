@@ -12,6 +12,8 @@ namespace Spawn.Starfield.PluginsManager
         {
             base.OnStartup(e);
 
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
 #if DEBUG
             AppSettings.Default.DataDirectory = "D:\\SteamLibrary\\steamapps\\common\\Starfield\\Data";
             AppSettings.Default.Save();
@@ -23,6 +25,13 @@ namespace Spawn.Starfield.PluginsManager
                 AppSettings.Default.DataDirectory = SelectDataDirectory();
                 AppSettings.Default.Save();
             }
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            MessageBox.Show($"An unexpected error occured!\r\n\r\n{e.ExceptionObject}\r\n\r\nThe app is going to exit.");
+
+            Environment.Exit(-1);
         }
 
         private static string SelectDataDirectory()

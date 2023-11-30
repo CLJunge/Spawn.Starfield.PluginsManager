@@ -32,9 +32,18 @@ namespace Spawn.Starfield.PluginsManager
         private void UpdateTitle()
         {
             FileInfo fi = new(Path.Combine(AppSettings.Default.DataDirectory, "..", "Starfield.exe"));
-            FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(fi.FullName);
 
-            Title += $" (Starfield {new Version(versionInfo.FileVersion!).ToString(3)})";
+            if (fi.Exists)
+            {
+                try
+                {
+                    FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(fi.FullName);
+                    Title += $" (Starfield {new Version(versionInfo.FileVersion!).ToString(3)})";
+                }
+                catch
+                {
+                }
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -65,21 +74,28 @@ namespace Spawn.Starfield.PluginsManager
         {
             List<Item> lstPlugins = [];
 
-            for (int i = 0; i < dataPlugins.Count; i++)
+            try
             {
-                Item? item = loadedPlugins.Where(p => dataPlugins[i].Name.Equals(p.Name)).FirstOrDefault();
+                for (int i = 0; i < dataPlugins.Count; i++)
+                {
+                    Item? item = loadedPlugins.Where(p => dataPlugins[i].Name.Equals(p.Name)).FirstOrDefault();
 
-                if (item != null)
-                    lstPlugins.Add(item);
-                else
-                    lstPlugins.Add(dataPlugins[i]);
+                    if (item != null)
+                        lstPlugins.Add(item);
+                    else
+                        lstPlugins.Add(dataPlugins[i]);
+                }
+
+                lstPlugins.Sort(s_comparison);
+
+                for (int i = 0; i < lstPlugins.Count; i++)
+                {
+                    lstPlugins[i].LoadIndex = i;
+                }
             }
-
-            lstPlugins.Sort(s_comparison);
-
-            for (int i = 0; i < lstPlugins.Count; i++)
+            catch (Exception ex)
             {
-                lstPlugins[i].LoadIndex = i;
+                MessageBox.Show($"Couldn't compare plugins!\r\n\r\n{ex.Message}");
             }
 
             return lstPlugins;
@@ -87,58 +103,73 @@ namespace Spawn.Starfield.PluginsManager
 
         private void WritePluginsToFile(string filePath, bool showNotification)
         {
-            StringBuilder sb = new();
+            try
 
-            sb.AppendLine("# Created by Spawn SF Plugins Manager");
-
-            for (int i = 0; i < PluginList.Items.Count; i++)
             {
-                Item item = (PluginList.Items[i] as Item)!;
-                string strLine = item.Name;
+                StringBuilder sb = new();
 
-                if (item.IsActive)
-                    strLine = $"*{strLine}";
+                sb.AppendLine("# Created by Spawn SF Plugins Manager");
 
-                sb.AppendLine(strLine);
+                for (int i = 0; i < PluginList.Items.Count; i++)
+                {
+                    Item item = (PluginList.Items[i] as Item)!;
+                    string strLine = item.Name;
+
+                    if (item.IsActive)
+                        strLine = $"*{strLine}";
+
+                    sb.AppendLine(strLine);
+                }
+
+                File.WriteAllText(filePath, sb.ToString());
+
+                if (showNotification)
+                    MessageBox.Show(this, "Saved plugins file successfuly.", Title, MessageBoxButton.OK, MessageBoxImage.Information);
             }
-
-            File.WriteAllText(filePath, sb.ToString());
-
-            if (showNotification)
-                MessageBox.Show(this, "Saved plugins file successfuly.", Title, MessageBoxButton.OK, MessageBoxImage.Information);
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Couldn't save plugins.txt file!\r\n\r\n{ex.Message}");
+            }
         }
 
         private List<Item> LoadPluginsFromFile(string filePath)
         {
             List<Item> lstRet = [];
 
-            if (File.Exists(filePath))
+            try
             {
-                using FileStream fs = File.OpenRead(filePath);
-                using StreamReader sr = new(fs);
-
-                string? strLine = null;
-
-                while ((strLine = sr.ReadLine()) != null)
+                if (File.Exists(filePath))
                 {
-                    if (!strLine.StartsWith('#'))
+                    using FileStream fs = File.OpenRead(filePath);
+                    using StreamReader sr = new(fs);
+
+                    string? strLine = null;
+
+                    while ((strLine = sr.ReadLine()) != null)
                     {
-                        bool blnIsActive = false;
-
-                        if (strLine.StartsWith('*'))
+                        if (!strLine.StartsWith('#'))
                         {
-                            strLine = strLine[1..];
-                            blnIsActive = true;
+                            bool blnIsActive = false;
+
+                            if (strLine.StartsWith('*'))
+                            {
+                                strLine = strLine[1..];
+                                blnIsActive = true;
+                            }
+
+                            Item item = new(strLine, blnIsActive)
+                            {
+                                LoadIndex = lstRet.Count
+                            };
+
+                            lstRet.Add(item);
                         }
-
-                        Item item = new(strLine, blnIsActive)
-                        {
-                            LoadIndex = lstRet.Count
-                        };
-
-                        lstRet.Add(item);
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Couldn't load plugins!\r\n\r\n{ex.Message}");
             }
 
             return lstRet;
@@ -185,6 +216,175 @@ namespace Spawn.Starfield.PluginsManager
         private void PluginList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateButtonsState(PluginList, PluginsUpButton, PluginsDownButton);
+        }
+        #endregion
+
+        #region Archives
+        private void LoadArchives()
+        {
+            List<Item> lstDataArchives = LoadArchivesFromDataDirectory();
+            List<Item> lstLoadedArchives = LoadArchivesFromFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", "Starfield", "StarfieldCustom.ini"));
+
+            ArchiveList.ItemsSource = CompareAndSortArchives(lstDataArchives, lstLoadedArchives);
+
+            ArchivesUpButton.IsEnabled = false;
+            ArchivesDownButton.IsEnabled = false;
+        }
+
+        private List<Item> LoadArchivesFromDataDirectory()
+        {
+            List<Item> lstRet = [];
+
+            if (!string.IsNullOrEmpty(AppSettings.Default.DataDirectory))
+            {
+                string[] vFiles = Directory.GetFiles(AppSettings.Default.DataDirectory, "*.ba2").Select(f => Path.GetFileName(f)).ToArray();
+                string[] vFilteredFiles = vFiles.Where(f => !AppSettings.Default.DefaultArchives.Contains(f)).ToArray();
+
+                for (int i = 0; i < vFilteredFiles.Length; i++)
+                {
+                    lstRet.Add(new Item(vFilteredFiles[i], false));
+                }
+            }
+
+            return lstRet;
+        }
+
+        private List<Item> LoadArchivesFromFile(string filePath)
+        {
+            List<Item> lstRet = [];
+
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    using FileStream fs = File.OpenRead(filePath);
+                    using StreamReader sr = new(fs);
+
+                    string? strLine = null;
+
+                    string strResourceKey = "sResourceIndexFileList=";
+
+                    while ((strLine = sr.ReadLine()) != null)
+                    {
+                        if (strLine.StartsWith(strResourceKey))
+                        {
+                            strLine = strLine.Replace(strResourceKey, string.Empty);
+
+                            string[] vArchives = strLine.Split(',');
+
+                            for (int i = 0; i < vArchives.Length; i++)
+                            {
+                                string strArchive = vArchives[i].Trim();
+                                if (!AppSettings.Default.DefaultArchives.Contains(strArchive))
+                                {
+                                    Item item = new(strArchive, true)
+                                    {
+                                        LoadIndex = lstRet.Count
+                                    };
+
+                                    lstRet.Add(item);
+                                }
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Couldn't load archives from ini file!\r\n\r\n{ex.Message}");
+            }
+
+            return lstRet;
+        }
+
+        private List<Item> CompareAndSortArchives(List<Item> dataArchives, List<Item> loadedArchives)
+        {
+            List<Item> lstArchives = [];
+
+            try
+            {
+                for (int i = 0; i < dataArchives.Count; i++)
+                {
+                    Item? item = loadedArchives.Where(p => dataArchives[i].Name.Equals(p.Name)).FirstOrDefault();
+
+                    if (item != null)
+                        lstArchives.Add(item);
+                    else
+                        lstArchives.Add(dataArchives[i]);
+                }
+
+                lstArchives.Sort(s_comparison);
+
+                for (int i = 0; i < lstArchives.Count; i++)
+                {
+                    lstArchives[i].LoadIndex = i;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Couldn't compare archives!\r\n\r\n{ex.Message}");
+            }
+
+            return lstArchives;
+        }
+
+        private void ArchiveList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateButtonsState(ArchiveList, ArchivesUpButton, ArchivesDownButton);
+        }
+
+        private void ArchivesUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            DecreaseLoadIndex(ArchiveList, ArchivesUpButton, ArchivesDownButton);
+        }
+
+        private void ArchivesDownButton_Click(object sender, RoutedEventArgs e)
+        {
+            IncreaseLoadIndex(ArchiveList, ArchivesUpButton, ArchivesDownButton);
+        }
+
+        private void ArchivesSave_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                StringBuilder sb = new();
+                sb.Append("sResourceIndexFileList=");
+                sb.Append("Starfield - LODTextures.ba2, ");
+                sb.Append("Starfield - Textures01.ba2, ");
+                sb.Append("Starfield - Textures02.ba2, ");
+                sb.Append("Starfield - Textures03.ba2, ");
+                sb.Append("Starfield - Textures04.ba2, ");
+                sb.Append("Starfield - Textures05.ba2, ");
+                sb.Append("Starfield - Textures06.ba2, ");
+                sb.Append("Starfield - Textures07.ba2, ");
+                sb.Append("Starfield - Textures08.ba2, ");
+                sb.Append("Starfield - Textures09.ba2, ");
+                sb.Append("Starfield - Textures10.ba2, ");
+                sb.Append("Starfield - Textures11.ba2, ");
+                sb.Append("Starfield - TexturesPatch.ba2");
+
+                List<Item> lstArchives = ArchiveList.Items.Cast<Item>().Where(i => i.IsActive).ToList();
+
+                for (int i = 0; i < lstArchives.Count; i++)
+                {
+                    sb.Append($", {lstArchives[i].Name}");
+                }
+
+                Clipboard.SetText(sb.ToString());
+
+                MessageBox.Show("Copied resource string to clipboard. Paste it into your StarfieldCustom.ini file.", Title, MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Couldn't create resource string!\r\n\r\n{ex.Message}");
+            }
+        }
+
+        private void ArchivesCancel_Click(object sender, RoutedEventArgs e)
+        {
+            LoadArchives();
         }
         #endregion
 
@@ -241,154 +441,6 @@ namespace Spawn.Starfield.PluginsManager
                 UpdateButtonsState(listView, upButton, downButton);
             }
         }
-
-        #region Archives
-        private void LoadArchives()
-        {
-            List<Item> lstDataArchives = LoadArchivesFromDataDirectory();
-            List<Item> lstLoadedArchives = LoadArchivesFromFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", "Starfield", "StarfieldCustom.ini"));
-
-            ArchiveList.ItemsSource = CompareAndSortArchives(lstDataArchives, lstLoadedArchives);
-
-            ArchivesUpButton.IsEnabled = false;
-            ArchivesDownButton.IsEnabled = false;
-        }
-
-        private List<Item> LoadArchivesFromDataDirectory()
-        {
-            List<Item> lstRet = [];
-
-            if (!string.IsNullOrEmpty(AppSettings.Default.DataDirectory))
-            {
-                string[] vFiles = Directory.GetFiles(AppSettings.Default.DataDirectory, "*.ba2").Select(f => Path.GetFileName(f)).ToArray();
-                string[] vFilteredFiles = vFiles.Where(f => !AppSettings.Default.DefaultArchives.Contains(f)).ToArray();
-
-                for (int i = 0; i < vFilteredFiles.Length; i++)
-                {
-                    lstRet.Add(new Item(vFilteredFiles[i], false));
-                }
-            }
-
-            return lstRet;
-        }
-
-        private List<Item> LoadArchivesFromFile(string filePath)
-        {
-            List<Item> lstRet = [];
-
-            if (File.Exists(filePath))
-            {
-                using FileStream fs = File.OpenRead(filePath);
-                using StreamReader sr = new(fs);
-
-                string? strLine = null;
-
-                string strResourceKey = "sResourceIndexFileList=";
-
-                while ((strLine = sr.ReadLine()) != null)
-                {
-                    if (strLine.StartsWith(strResourceKey))
-                    {
-                        strLine = strLine.Replace(strResourceKey, string.Empty);
-
-                        string[] vArchives = strLine.Split(',');
-
-                        for (int i = 0; i < vArchives.Length; i++)
-                        {
-                            string strArchive = vArchives[i].Trim();
-                            if (!AppSettings.Default.DefaultArchives.Contains(strArchive))
-                            {
-                                Item item = new(strArchive, true)
-                                {
-                                    LoadIndex = lstRet.Count
-                                };
-
-                                lstRet.Add(item);
-                            }
-                        }
-
-                        break;
-                    }
-                }
-            }
-
-            return lstRet;
-        }
-
-        private List<Item> CompareAndSortArchives(List<Item> dataArchives, List<Item> loadedArchives)
-        {
-            List<Item> lstArchives = [];
-
-            for (int i = 0; i < dataArchives.Count; i++)
-            {
-                Item? item = loadedArchives.Where(p => dataArchives[i].Name.Equals(p.Name)).FirstOrDefault();
-
-                if (item != null)
-                    lstArchives.Add(item);
-                else
-                    lstArchives.Add(dataArchives[i]);
-            }
-
-            lstArchives.Sort(s_comparison);
-
-            for (int i = 0; i < lstArchives.Count; i++)
-            {
-                lstArchives[i].LoadIndex = i;
-            }
-
-            return lstArchives;
-        }
-
-        private void ArchiveList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            UpdateButtonsState(ArchiveList, ArchivesUpButton, ArchivesDownButton);
-        }
-
-        private void ArchivesUpButton_Click(object sender, RoutedEventArgs e)
-        {
-            DecreaseLoadIndex(ArchiveList, ArchivesUpButton, ArchivesDownButton);
-        }
-
-        private void ArchivesDownButton_Click(object sender, RoutedEventArgs e)
-        {
-            IncreaseLoadIndex(ArchiveList, ArchivesUpButton, ArchivesDownButton);
-        }
-
-        private void ArchivesSave_Click(object sender, RoutedEventArgs e)
-        {
-            StringBuilder sb = new();
-            sb.Append("sResourceIndexFileList=");
-            sb.Append("Starfield - LODTextures.ba2, ");
-            sb.Append("Starfield - Textures01.ba2, ");
-            sb.Append("Starfield - Textures02.ba2, ");
-            sb.Append("Starfield - Textures03.ba2, ");
-            sb.Append("Starfield - Textures04.ba2, ");
-            sb.Append("Starfield - Textures05.ba2, ");
-            sb.Append("Starfield - Textures06.ba2, ");
-            sb.Append("Starfield - Textures07.ba2, ");
-            sb.Append("Starfield - Textures08.ba2, ");
-            sb.Append("Starfield - Textures09.ba2, ");
-            sb.Append("Starfield - Textures10.ba2, ");
-            sb.Append("Starfield - Textures11.ba2, ");
-            sb.Append("Starfield - TexturesPatch.ba2");
-
-            List<Item> lstArchives = ArchiveList.Items.Cast<Item>().Where(i => i.IsActive).ToList();
-
-            for (int i = 0; i < lstArchives.Count; i++)
-            {
-                sb.Append($", {lstArchives[i].Name}");
-            }
-
-            Clipboard.SetText(sb.ToString());
-
-            MessageBox.Show("Copied resource string to clipboard. Paste it into your StarfieldCustom.ini file.", Title, MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        private void ArchivesCancel_Click(object sender, RoutedEventArgs e)
-        {
-            LoadArchives();
-        }
-        #endregion
 
         private void ListView_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
