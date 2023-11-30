@@ -1,0 +1,75 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Spawn.Starfield.PluginsManager" GeneratedClassName="AppSettings">
+  <Profiles />
+  <Settings>
+    <Setting Name="DataDirectory" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DefaultPlugins" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+  &lt;string&gt;BlueprintShips-Starfield.esm&lt;/string&gt;
+  &lt;string&gt;Constellation.esm&lt;/string&gt;
+  &lt;string&gt;OldMars.esm&lt;/string&gt;
+  &lt;string&gt;Starfield.esm&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+    </Setting>
+    <Setting Name="DefaultArchives" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+  &lt;string&gt;BlueprintShips-Starfield - Localization.ba2&lt;/string&gt;
+  &lt;string&gt;OldMars - Localization.ba2&lt;/string&gt;
+  &lt;string&gt;OldMars - Textures.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Animations.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - DensityMaps.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - FaceAnimation01.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - FaceAnimation02.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - FaceAnimation03.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - FaceAnimation04.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - FaceAnimationPatch.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - FaceMeshes.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - GeneratedTextures.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Interface.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Localization.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - LODMeshes.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - LODMeshesPatch.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - LODTextures.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Materials.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Meshes01.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Meshes02.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - MeshesPatch.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Misc.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Particles.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - ParticlesTestData.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - PlanetData.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Shaders.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - ShadersBeta.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Terrain01.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Terrain02.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Terrain03.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Terrain04.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Textures01.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Textures02.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Textures03.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Textures04.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Textures05.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Textures06.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Textures07.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Textures08.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Textures09.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Textures10.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Textures11.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - TexturesPatch.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Voices01.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - Voices02.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - VoicesPatch.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - WwiseSounds01.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - WwiseSounds02.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - WwiseSounds03.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - WwiseSounds04.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - WwiseSounds05.ba2&lt;/string&gt;
+  &lt;string&gt;Starfield - WwiseSoundsPatch.ba2&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
