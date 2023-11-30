@@ -10,7 +10,7 @@
         Background="{DynamicResource MaterialDesignPaper}"
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
-        Title="Spawn | Plugins Manager"
+        Title="Spawn | Plugin Manager"
         Loaded="Window_Loaded" Width="550" Height="700" MinWidth="550" MinHeight="700">
     <Grid>
         <Grid.RowDefinitions>
